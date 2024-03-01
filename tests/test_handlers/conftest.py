@@ -6,6 +6,8 @@ from aiogram import Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from bot.handlers.command_handlers import command_router
+from bot.handlers.text_handlers import formatted_router, text_router
+from tests.test_handlers import test_unit
 from tests.test_handlers.mocked_bot import MockedBot
 
 
@@ -23,11 +25,10 @@ def bot():
     return MockedBot()
 
 
-@pytest_asyncio.fixture()
+@pytest_asyncio.fixture(scope="session")
 async def dispatcher():
     dp = Dispatcher()
-    dp.include_router(command_router)
-    #dp.include_router(formatted_router)
+    dp.include_routers(command_router, formatted_router, text_router)
     await dp.emit_startup()
     try:
         yield dp
@@ -35,9 +36,10 @@ async def dispatcher():
         await dp.emit_shutdown()
 
 
-# @pytest.fixture(scope="session")
-# def event_loop():
-    # asyncio.set_event_loop(asyncio.new_event_loop())
-    #return asyncio.get_event_loop()
-
+@pytest.fixture(scope="session")
+def loop():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    yield loop
+    loop.close()
 
