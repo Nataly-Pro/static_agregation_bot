@@ -55,4 +55,7 @@
 - aiogram 3
 - pytest
 
-[video_2024-03-02_11-59-29.mp4](..%2F..%2Fvideo_2024-03-02_11-59-29.mp4)
+
+
+https://github.com/Nataly-Pro/static_agregation_bot/assets/135797064/d0a7569a-eb49-4696-a59a-a06b2736e2f1
+
