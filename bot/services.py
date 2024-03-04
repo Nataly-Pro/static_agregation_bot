@@ -1,7 +1,9 @@
+import asyncio
 import re
 from datetime import datetime as dt
 
 from bot.MongoDB import collection
+
 
 GROUP_BY = {
     "month": "%Y-%m-01T00:00:00",
@@ -51,6 +53,13 @@ async def get_report(query: dict | str) -> dict:
     labels = [d['_id'] for d in docs]
 
     return {"dataset": dataset, "labels": labels}
+
+
+async def get_valid_dates():
+    min_dt_from = await collection.find().sort({"dt": 1}).limit(1).to_list(None)
+    max_dt_upto = await collection.find().sort({"dt": -1}).limit(1).to_list(None)
+
+    return f'Данные доступны за период c {min_dt_from[0]["dt"]} по {max_dt_upto[0]["dt"]}'
 
 
 async def get_data_from_text(text: str) -> dict | str:
