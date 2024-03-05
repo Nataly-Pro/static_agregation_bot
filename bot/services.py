@@ -1,4 +1,3 @@
-import asyncio
 import re
 from datetime import datetime as dt
 
@@ -56,6 +55,8 @@ async def get_report(query: dict | str) -> dict:
 
 
 async def get_valid_dates():
+    """Проверка на доступный массив дат.
+    """
     min_dt_from = await collection.find().sort({"dt": 1}).limit(1).to_list(None)
     max_dt_upto = await collection.find().sort({"dt": -1}).limit(1).to_list(None)
 
