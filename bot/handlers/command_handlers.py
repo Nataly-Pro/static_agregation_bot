@@ -10,7 +10,7 @@ from aiogram3_calendar.calendar_types import DialogCalendarCallback
 
 from bot.keyboards import inline_keyboard
 from bot.lexicon import LEXICON
-from bot.services import get_report
+from bot.services import get_report, get_valid_dates
 
 command_router = Router()
 
@@ -112,5 +112,5 @@ async def command_report(message: Message, state: FSMContext) -> Message:
     if report['dataset']:
         return await message.answer(text=f'Отчёт:\n{report}')
     else:
-        return await message.answer(text='За выбранный период нет данных.')
+        return await message.answer(text=f'За выбранный период нет данных.\n{await get_valid_dates()}')
 

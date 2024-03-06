@@ -3,6 +3,7 @@ from datetime import datetime as dt
 
 from bot.MongoDB import collection
 
+
 GROUP_BY = {
     "month": "%Y-%m-01T00:00:00",
     "day": "%Y-%m-%dT00:00:00",
@@ -22,6 +23,12 @@ async def get_report(query: dict | str) -> dict:
     """Получает запрос, берёт из него параметры (начальную и конечную даты,
     тип группировки данных), агрегирует по ним данные из БД
     и формирует отчет в определенном формате.
+    Пример сообщения:
+    {
+     "dt_from":"2022-09-01T00:00:00",
+     "dt_upto":"2022-12-31T23:59:00",
+     "group_type":"month"
+    }
     """
     if not isinstance(query, dict):
         text = query
@@ -53,10 +60,21 @@ async def get_report(query: dict | str) -> dict:
     return {"dataset": dataset, "labels": labels}
 
 
+async def get_valid_dates():
+    """Проверка на доступный массив дат.
+    """
+    min_dt_from = await collection.find().sort({"dt": 1}).limit(1).to_list(None)
+    max_dt_upto = await collection.find().sort({"dt": -1}).limit(1).to_list(None)
+
+    return f'Данные доступны за период c {min_dt_from[0]["dt"]} по {max_dt_upto[0]["dt"]}'
+
+
 async def get_data_from_text(text: str) -> dict | str:
     """Ищет в стандартном текстовом сообщении необходимые данные:
     начальную и конечную даты, тип группировки данных.
     Возвращает словарь query.
+    Пример сообщения:
+    "Необходимо посчитать суммы всех выплат с 28.02.2022 по 31.03.2022, единица группировки - день."
     """
     dates = []
     for key_word in ['с ', 'по ']:

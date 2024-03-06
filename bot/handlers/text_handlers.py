@@ -1,8 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from bot.lexicon import LEXICON
-from bot.services import get_report, get_data_from_text
-
+from bot.services import get_report, get_data_from_text, get_valid_dates
 
 text_router = Router()
 formatted_router = Router()
@@ -14,7 +13,11 @@ async def process_formatted_text(message: Message) -> Message:
     имитирующие json формат.
     """
     data = message.text
-    return await message.answer(f'Отчёт:\n{await get_report(data)}')
+    report = await get_report(data)
+    if report['dataset']:
+        return await message.answer(text=f'Отчёт:\n{report}')
+    else:
+        return await message.answer(text=f'За выбранный период нет данных.\n{await get_valid_dates()}')
 
 
 @text_router.message()
